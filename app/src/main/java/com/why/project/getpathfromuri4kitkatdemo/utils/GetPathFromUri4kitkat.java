@@ -10,6 +10,8 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import java.io.File;
+
 /**
  * @CreateBy HaiyuKing
  * @Used Android 4.4 kitkat以上及以下根据uri获取路径的方法
@@ -114,6 +116,11 @@ public class GetPathFromUri4kitkat {
                 final int column_index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(column_index);
             }
+        }catch (IllegalArgumentException e){
+            //java.lang.IllegalArgumentException: column '_data' does not exist
+            //华为的特殊处理：content://com.huawei.hidisk.fileprovider/root/storage/emulated/0/tencent/TIMfile_recv/xxx.doc
+            String rootPre = File.separator + "root";// /root
+            return uri.getPath().startsWith(rootPre) ? uri.getPath().replace(rootPre,"") : uri.getPath();
         } finally {
             if (cursor != null)
                 cursor.close();
